@@ -1,6 +1,5 @@
 # Api-Ecommerce-Flask
 Este projeto consiste em uma API desenvolvida para fins de estudo, explorando os conceitos fundamentais do framework Flask. Ao longo do desenvolvimento, foram abordados os seguintes conceitos:
-# Conceitos aprendidos:
 ## Rotas
 Implementação de rotas para diferentes endpoints, incluindo a manipulação de parâmetros e validação eficiente das requisições, garantindo um fluxo consistente de dados.
 ## Instanciamento do banco de dados SQLite
