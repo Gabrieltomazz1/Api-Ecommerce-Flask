@@ -7,7 +7,7 @@ Implementação de rotas para diferentes endpoints, incluindo a manipulação de
 Exploração do instanciamento do banco de dados SQLite, com ênfase na criação de tabelas que atendem às necessidades específicas da aplicação. Essa etapa abrange a organização estrutural do banco para melhor suportar as operações da API.
 Este repositório serve como um recurso valioso para quem está aprendendo Flask, fornecendo exemplos práticos e uma base sólida para entender os conceitos-chave do desenvolvimento de APIs usando esse framework.
 
-#Projeto em desenvolvimento
+# Projeto em desenvolvimento
 
 
 
