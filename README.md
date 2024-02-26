@@ -13,7 +13,7 @@ Implementação das operações básicas de CRUD (Create, Read, Update, Delete) 
 ## Autenticação de Login
 Desenvolvimento de um sistema de autenticação de login para garantir a segurança dos usuários. Isso permite que os usuários façam login de forma segura na aplicação, acessando recursos protegidos e realizando operações autorizadas.
 
-[!NOTE] Projeto em Desenvolvimento
+>[!NOTE] Projeto em Desenvolvimento
 >Este repositório está em constante desenvolvimento, sendo continuamente atualizado e aprimorado para fornecer exemplos práticos e uma base sólida para compreensão dos conceitos-chave do desenvolvimento de APIs com Flask.
 
 ### Seja bem-vindo(a) para explorar, contribuir e aprender junto conosco neste projeto emocionante!
