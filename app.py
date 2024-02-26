@@ -1,4 +1,3 @@
-from crypt import methods
 from flask import Flask, request, jsonify
 from flask_login import UserMixin, login_user, logout_user, LoginManager, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -22,6 +21,12 @@ login_manager.login_view = "login"
 # db.create_all
 
 
+# Autenticação
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(120), nullable=False, unique=True)
@@ -35,12 +40,6 @@ class Product(db.Model):
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
-
-
-# Autenticação
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 @app.route("/api/products/add", methods=["POST"])
@@ -133,13 +132,12 @@ def login():
         return jsonify({"message": "User Logged successfully"})
     return jsonify({"message": "Unauthorized. Invalid Credential"}), 401
 
-@app.route("/logout", methods= ["POST"])
+
+@app.route("/logout", methods=["POST"])
 @login_required
 def logout():
     logout_user()
     return jsonify({"message": "User Logout successfully"})
-    
-
 
 
 # limita a criação de servidores, Inicializa o servidor apenas quando acontecer a ocorrencia de "__main__"
@@ -147,4 +145,4 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-# time 03:0:0
+# time 03:10:00
