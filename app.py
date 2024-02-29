@@ -1,5 +1,12 @@
 from flask import Flask, request, jsonify
-from flask_login import UserMixin, login_user, logout_user, LoginManager, login_required
+from flask_login import (
+    UserMixin,
+    login_user,
+    logout_user,
+    LoginManager,
+    login_required,
+    current_user,
+)
 from flask_sqlalchemy import SQLAlchemy
 
 # Commun flask inicializacion
@@ -27,12 +34,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(120), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=True)
-
-
 # Modelagem do banco de dados
 # Produto (id, name, price, description)
 class Product(db.Model):
@@ -40,6 +41,20 @@ class Product(db.Model):
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(80), nullable=True)
+    cart = db.relationship("CartItem", backref="user", lazy=True)
+
+
+class CartItem(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
 
 
 @app.route("/api/products/add", methods=["POST"])
@@ -140,9 +155,72 @@ def logout():
     return jsonify({"message": "User Logout successfully"})
 
 
+# Checkout
+@app.route("/api/cart/add/<int:product_id>", methods=["POST"])
+@login_required
+def add_to_cart(product_id):
+    # usuario
+    user = User.query.get(int(current_user.id))
+    product = Product.query.get(int(product_id))
+    if user and product:
+
+        cart_item = CartItem(user_id=user.id, product_id=product.id)
+        db.session.add(cart_item)
+        db.session.commit()
+
+        return jsonify({"Message": "Added to the cart successfully"})
+    return jsonify({"Message": "Failed to add the cart"}), 400
+    # produto
+
+
+@app.route("/api/cart/delete/<int:product_id>", methods=["DELETE"])
+@login_required
+def delete_from_cart(product_id):
+    cart_item = CartItem.query.filter_by(
+        user_id=current_user.id, product_id=product_id
+    ).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        return jsonify({"Message": "Product removed successfully"})
+    return jsonify({"Message:": "Product not found"}), 400
+
+
+@app.route("/api/cart", methods=["GET"])
+@login_required
+def view_cart():
+    user = User.query.get(int(current_user.id))
+    cart_items = user.cart
+    cart_content = []
+    for cart_item in cart_items:
+        product = Product.query.get(cart_item.product_id)
+        cart_content.append(
+            {
+                "id": cart_item.id,
+                "user_id": cart_item.user_id,
+                "product_id": cart_item.product_id,
+                "product_name": product.name,
+                "product_price": product.price,
+            }
+        )
+    return jsonify(cart_content)
+
+
+@app.route("/api/cart/checkout", methods=["POST"])
+@login_required
+def checkout():
+    user = User.query.get(int(current_user.id))
+    cart_items = user.cart
+    for cart_item in cart_items:
+        db.session.delete(cart_item)
+    db.session.commit()
+    return jsonify({"Message": "Checout successfully. Cart has been cleared"})
+
+
 # limita a criação de servidores, Inicializa o servidor apenas quando acontecer a ocorrencia de "__main__"
 if __name__ == "__main__":
     app.run(debug=True)
+    
 
 
 # time 03:10:00
